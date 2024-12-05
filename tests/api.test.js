@@ -2,7 +2,7 @@ const request = require("supertest");
 const app = require("../app");
 
 describe("POST /notes", () => {
-  it("should create a new note", async () => {
+  it("Должен создать новую заметку", async () => {
     const res = await request(app)
       .post("/notes")
       .send({ title: "Test Note", content: "This is a test note" });
@@ -12,22 +12,22 @@ describe("POST /notes", () => {
     expect(res.body.content).toEqual("This is a test note");
   });
 
-  it("should return 400 for missing title or content", async () => {
+  it("Должен вернуть 400 для отсутствующих title или content", async () => {
     const res = await request(app).post("/notes").send({ title: "", content: "" });
     expect(res.statusCode).toEqual(400); // Отсутствие обязательных полей
-    expect(res.body.message).toContain("Title and content are required");
+    expect(res.body.message).toContain("Требуются название и содержимое заметки");
   });
 });
 
 describe("GET /notes", () => {
-  it("should fetch all notes", async () => {
+  it("Должен вернуть все заметки", async () => {
     const res = await request(app).get("/notes");
     expect(res.statusCode).toEqual(200);
     expect(res.body).toBeInstanceOf(Array);
     expect(res.body.length).toBeGreaterThan(0); // Проверка, что заметки не пусты
   });
 
-  it("should fetch a note by title", async () => {
+  it("Должен вернуть заметку по названию", async () => {
     const note = { title: "Searchable Note", content: "This is a searchable note" };
     const createRes = await request(app).post("/notes").send(note);
     const title = createRes.body.title;
@@ -38,15 +38,15 @@ describe("GET /notes", () => {
     expect(searchRes.body.content).toEqual("This is a searchable note");
   });
 
-  it("should return 404 for non-existent note by title", async () => {
+  it("Должен вернуть 404 для несуществующей заметки по названию", async () => {
     const res = await request(app).get("/notes/read/Nonexistent Title");
     expect(res.statusCode).toEqual(404);
-    expect(res.body.message).toContain("Note with title");
+    expect(res.body.message).toContain("Заметка с названием");
   });
 });
 
 describe("DELETE /notes", () => {
-  it("should delete a note", async () => {
+  it("Должен удалить заметку", async () => {
     const note = { title: "To be deleted", content: "Temporary note" };
     const createRes = await request(app).post("/notes").send(note);
     const noteId = createRes.body.id;
@@ -55,15 +55,15 @@ describe("DELETE /notes", () => {
     expect(deleteRes.statusCode).toEqual(204);
   });
 
-  it("should return 409 for deleting a non-existent note", async () => {
+  it("Должен вернуть 409 для удаления несуществующей заметки", async () => {
     const res = await request(app).delete("/notes/nonexistent-id");
     expect(res.statusCode).toEqual(409);
-    expect(res.body.message).toContain("Note with id");
+    expect(res.body.message).toContain("Заметка с id");
   });
 });
 
 describe("PUT /notes", () => {
-  it("should update an existing note", async () => {
+  it("Должен обновить существующую заметку", async () => {
     const note = { title: "Original Title", content: "Original Content" };
     const createRes = await request(app).post("/notes").send(note);
     const noteId = createRes.body.id;
@@ -80,9 +80,9 @@ describe("PUT /notes", () => {
     expect(getRes.body.content).toEqual("Updated Content");
   });
 
-  it("should return 409 for updating a non-existent note", async () => {
+  it("Должен вернуть 409 для обновления несуществующей заметки", async () => {
     const res = await request(app).put("/notes/nonexistent-id").send({ title: "New Title", content: "New Content" });
     expect(res.statusCode).toEqual(409); // Для несуществующей заметки
-    expect(res.body.message).toContain("Note with id");
+    expect(res.body.message).toContain("Заметка с id");
   });
 });
